@@ -29,9 +29,10 @@ app.get('/urls', (req, res) => {
         main_url,
         urls
       });
-    }, e => {
+    }
+    .catch(e){
       res.status(404).send(e);
-    })
+    }
 })
 app.post('/urls', (req, res) => {
   let original_url = req.body.original_url;
@@ -39,7 +40,7 @@ app.post('/urls', (req, res) => {
     original_url = 'http://' + original_url;
     console.log(original_url);
   }
-  
+
   const url = new Url({
     original_url: original_url,
     shortened_url: req.body.shortened_url
@@ -48,7 +49,7 @@ app.post('/urls', (req, res) => {
   url.save()
     .then(doc => {
       res.redirect('/');
-    }, e => {
+    }.catch(e){
       res.status(404).send(e);
     })
 })
