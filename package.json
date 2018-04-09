@@ -1,27 +1,23 @@
 {
-  "name": "shorternurl",
+  "name": "mongodb1_web",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "",
+  "main": "Mongodb1_Web copy.js",
   "scripts": {
+    "start": "node server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "engines":{
+    "node":"8.9.4"
+    },
   "author": "",
   "license": "ISC",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/DavidWei95036593/shorternUrl.git"
-  },
-  "bugs": {
-    "url": "https://github.com/DavidWei95036593/shorternUrl/issues"
-  },
-  "homepage": "https://github.com/DavidWei95036593/shorternUrl#readme",
-  "description": "",
   "dependencies": {
     "body-parser": "^1.18.2",
     "express": "^4.16.3",
     "hbs": "^4.0.1",
     "lodash": "^4.17.5",
-    "mongoose": "^5.0.12",
-    "path": "^0.12.7"
+    "mongodb": "^3.0.4",
+    "mongoose": "^5.0.10"
   }
 }

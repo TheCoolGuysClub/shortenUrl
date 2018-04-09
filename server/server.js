@@ -1,80 +1,109 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+const body_parser = require('body-parser');
 const _ = require('lodash');
 const hbs = require('hbs');
 const path = require('path');
+const {mongoose} = require('./db/mongoose.js');
+const {Url} = require('./models/url_model.js');
 
-//local
-const {mongoose} = require('./db/mongoose');
-const {Url} = require('./models/shortUrl');
+
 const app = express();
 const port = process.env.PORT || 3000;
-
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, '../views'));
+app.use(body_parser.json());
+app.use(body_parser.urlencoded({extended: true}));
+let main_url;
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}))
 
-app.post(`/Url`,(req,res)=>{
-  console.log(req.body);
+app.get('/', (req, res) => {
+  // Need to be changed
+  main_url = 'http://localhost:3000';
+  res.redirect('/urls');
+})
+
+app.get('/urls', (req, res) => {
+  Url.find()
+    .then(urls => {
+      res.render('url.hbs', {
+        main_url,
+        urls
+      });
+    }, e => {
+      res.status(404).send(e);
+    })
+})
+app.post('/urls', (req, res) => {
+  let original_url = req.body.original_url;
+  if (original_url.indexOf('http://') === -1 && original_url.indexOf('https://') === -1) {
+    original_url = 'http://' + original_url;
+    console.log(original_url);
+  }
+  
   const url = new Url({
-    originalURL:req.body.originalURL,
-    shortenedUrl:req.body.shortenedUrl
-  })
-  url.save().then(doc=>{
-    res.send(doc);
-  }, e=>{
-    res.send(e);
-  })
-})
-  app.get(`/Url`,(req,res)=>{
-    Url.find()
-    .then(Url=>{
-      res.send({Url})
-    },e=>{
-      res.status(404).send(e);
-    })
-  })
-  app.get(`/Url/new`,(req,res)=>{
-    res.render(`./Url/new.hbs`);
-  })
-  app.get(`/Url/:id`,(req,res)=>{
-    const id =req.params.id;
-    Url.findById(id)
-    .then(todo =>{
-      res.send({Url})
-    },e=>{
-      res.status(404).send(e);
-    })
+    original_url: original_url,
+    shortened_url: req.body.shortened_url
   })
 
-  app.delete(`/Url/:id`,(req,res)=>{
-    const id =req.params.id;
-    Url.findByIdAndRemove(id)
-    .then(Url=>{
-      res.send({Url})
-    },e=>{
+  url.save()
+    .then(doc => {
+      res.redirect('/');
+    }, e => {
       res.status(404).send(e);
     })
-  })
-  app.patch(`Url/:id`,(req,res)=>{
-    const id= req.params.id;
-    const body = _.pick(req.body,[`originalURL`,`shortenedUrl`]);
-
-
-  Url.findByIdAndUpdate(id,{$set:body},{new:true})
-  .then(Url=>{
-    if(!Url){
-      res.status(404).send()
-    }else{
-      res.send(Url);
-    }
-  },e=>{
-    res.status(404).send(e);
-  })
 })
 
-  app.listen(port, () => {
-    console.log(`listening on port ${port}`);
-  })
+app.get('/urls/new', (req, res) => {
+  res.render('url_new.hbs');
+})
+
+app.get('/urls/:short', (req, res) => {
+  const short = req.params.short;
+  Url.find({shortened_url: short})
+    .then(urls => {
+      res.redirect(urls[0].original_url);
+    }, e => {
+      res.status(404).send(e)
+    })
+})
+
+
+
+app.listen(port, () => {
+  console.log(`Listening on Port ${port}`);
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
