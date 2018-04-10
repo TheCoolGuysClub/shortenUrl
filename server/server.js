@@ -29,10 +29,9 @@ app.get('/urls', (req, res) => {
         main_url,
         urls
       });
-    }
-    .catch(e){
-      res.status(404).send(e);
-    }
+    }).catch(error=>{
+      res.status(404).send(error);
+    })
 })
 app.post('/urls', (req, res) => {
   let original_url = req.body.original_url;
@@ -49,8 +48,8 @@ app.post('/urls', (req, res) => {
   url.save()
     .then(doc => {
       res.redirect('/');
-    }.catch(e){
-      res.status(404).send(e);
+    }).catch(error=>{
+      res.status(404).send(error);
     })
 })
 
@@ -63,8 +62,8 @@ app.get('/urls/:short', (req, res) => {
   Url.find({shortened_url: short})
     .then(urls => {
       res.redirect(urls[0].original_url);
-    }, e => {
-      res.status(404).send(e)
+    }).catch(error=>{
+      res.status(404).send(error);
     })
 })
 
